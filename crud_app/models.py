@@ -12,7 +12,7 @@ class Student(models.Model):
     email = models.EmailField()
     course = models.CharField(max_length = 100)
 
-    gender = models.CharField(max_length = 1, choices = Gender_choices, default = 'M')
+    gender = models.CharField(max_length = 1, choices = Gender_choices, default = 'M' )
 
 
     hobbies = models.CharField(max_length = 255, blank = True)

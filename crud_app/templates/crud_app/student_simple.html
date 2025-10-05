@@ -1,0 +1,71 @@
+<!-- crud_app/templates/crud_app/student_simple.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Student CRUD - Simple</title>
+  <style> body{font-family:Arial;margin:16px} table{border-collapse:collapse;width:100%} th,td{border:1px solid #ddd;padding:6px} .card{border:1px solid #ccc;padding:10px;margin-top:12px;border-radius:6px} </style>
+</head>
+<body>
+  <h1>Student CRUD (simple)</h1>
+
+  <!-- SEARCH & FILTER (GET) -->
+  <form method="get">
+    <input type="text" name="q" placeholder="Search name..." value="{{ q }}">
+    <button type="submit">Search</button>
+
+    <div style="margin-top:8px;">
+      <strong>Gender:</strong>
+      {% for code,label in gender_choices %}
+        <label><input type="radio" name="gender" value="{{ code }}" {% if gender == code %}checked{% endif %}> {{ label }}</label>
+      {% endfor %}
+      <label><input type="radio" name="gender" value="" {% if not gender %}checked{% endif %}> All</label>
+    </div>
+
+    <div style="margin-top:8px;">
+      <strong>Hobbies:</strong>
+      {% for code,label in hobby_choices %}
+        <label><input type="checkbox" name="hobby" value="{{ code }}" {% if code in selected_hobbies %}checked{% endif %}> {{ label }}</label>
+      {% endfor %}
+    </div>
+  </form>
+
+  <!-- TABLE -->
+  <div class="card">
+    <table>
+      <tr><th>Name</th><th>Email</th><th>Course</th><th>Gender</th><th>Hobbies</th><th>Active</th><th>Action</th></tr>
+      {% for student in students %}
+      <tr>
+        <td>{{ student.name }}</td>
+        <td>{{ student.email }}</td>
+        <td>{{ student.course }}</td>
+        <td>{{ student.get_gender_display }}</td>
+        <td>{{ student.hobbies }}</td>
+        <td>{{ student.is_active }}</td>
+        <td>
+          <a href="{% url 'student_update' student.id %}">Edit</a>
+          <form method="post" action="{% url 'student_delete' student.id %}" style="display:inline">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('Delete?')">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7">No students</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <!-- CREATE / UPDATE FORM -->
+  <div class="card" id="form">
+    <h3>{% if update_id %}Edit{% else %}Add{% endif %} Student</h3>
+    <form method="post" action="{% if update_id %}{% url 'student_update' update_id %}{% else %}{% url 'student_create' %}{% endif %}">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">{% if update_id %}Update{% else %}Create{% endif %}</button>
+      <a href="{% url 'student_list' %}">Cancel</a>
+    </form>
+  </div>
+
+</body>
+</html>
